@@ -1,0 +1,16 @@
+package com.opscore.service;
+
+import com.opscore.dto.incident.IncidentRequestDTO;
+import com.opscore.dto.incident.IncidentResponseDTO;
+
+import java.util.List;
+
+public interface IncidentService {
+    IncidentResponseDTO createIncident(IncidentRequestDTO request);
+
+    List<IncidentResponseDTO> getAllIncidents();
+
+    IncidentResponseDTO getIncidentById(Long id);
+
+}
+

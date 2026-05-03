@@ -1,0 +1,42 @@
+package com.opscore.controller;
+
+import com.opscore.dto.incident.IncidentRequestDTO;
+import com.opscore.dto.incident.IncidentResponseDTO;
+import com.opscore.service.IncidentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/incidents")
+@RequiredArgsConstructor
+public class IncidentController {
+
+    private final IncidentService incidentService;
+
+    @PostMapping
+    public ResponseEntity<IncidentResponseDTO> createIncident(
+            @Valid @RequestBody IncidentRequestDTO request
+    ) {
+        IncidentResponseDTO response = incidentService.createIncident(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<IncidentResponseDTO>> getAllIncidents() {
+        return ResponseEntity.ok(incidentService.getAllIncidents());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentResponseDTO> getIncidentById(@PathVariable Long id) {
+        return ResponseEntity.ok(incidentService.getIncidentById(id));
+    }
+
+
+}
+
