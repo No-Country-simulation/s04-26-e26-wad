@@ -1,5 +1,6 @@
 package com.opscore.service;
 
+import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 
@@ -11,6 +12,8 @@ public interface IncidentService {
     List<IncidentResponseDTO> getAllIncidents();
 
     IncidentResponseDTO getIncidentById(Long id);
+
+    List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId);
 
 }
 

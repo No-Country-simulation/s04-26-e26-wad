@@ -1,5 +1,6 @@
 package com.opscore.controller;
 
+import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.service.IncidentService;
@@ -37,6 +38,13 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentById(id));
     }
 
+    @GetMapping("/{id}/assignments")
+    public ResponseEntity<List<AssignmentResponseDTO>> getAssignmentHistory(@PathVariable Long id) {
+
+        List<AssignmentResponseDTO> history = incidentService.getAssignmentHistory(id);
+
+        return ResponseEntity.ok(history);
+    }
 
 }
 

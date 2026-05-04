@@ -1,12 +1,17 @@
 package com.opscore.service;
 
 import com.opscore.dto.assignment.AssignmentRequestDTO;
+import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.enums.IncidentStatus;
+import com.opscore.exception.BadRequestException;
+import com.opscore.exception.ResourceNotFoundException;
 import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AssignmentService {
@@ -23,25 +28,25 @@ public class AssignmentService {
     public void assignIncident(Long incidentId, AssignmentRequestDTO request) {
 
         // 0. Validar request (PRIMERO)
-        if (request.getAssignedTo() == null || request.getAssignedTo().isBlank()) {
-            throw new RuntimeException("assignedTo is required");
-        }
+       // if (request.getAssignedTo() == null || request.getAssignedTo().isBlank()) {
+        //    throw new RuntimeException("assignedTo is required");
+        //}
 
         // 1. Validar existencia
         Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
+                //.orElseThrow(() -> new RuntimeException("Incident not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
 
         // 2. Regla: no asignar CLOSED
         if (incident.getStatus() == IncidentStatus.CLOSED) {
-            throw new RuntimeException("Cannot assign a CLOSED incident");
+            //throw new RuntimeException("Cannot assign a CLOSED incident");
+            throw new BadRequestException("Cannot assign a CLOSED incident");
         }
 
         // 3. Crear Assignment
         Assignment assignment = new Assignment();
         assignment.setIncident(incident);
         assignment.setAssignedTo(request.getAssignedTo());
-
-
         // 🔥 Simulación de usuario actual
         assignment.setAssignedBy("SYSTEM"); // luego aquí irá JWT
 
@@ -53,4 +58,8 @@ public class AssignmentService {
 
         incidentRepository.save(incident);
     }
+
+
+
+
 }
