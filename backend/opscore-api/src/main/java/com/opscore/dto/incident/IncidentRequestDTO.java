@@ -11,11 +11,11 @@ import lombok.Data;
 public class IncidentRequestDTO {
 
     @NotBlank(message = "Title is required")
-    @Size(max = 100, message = "Title must be less than 100 characters")
+    @Size(min = 5,max = 100, message = "Title must be less than 100 characters")
     private String title;
 
     @NotBlank(message = "Description is required")
-    @Size(max = 500, message = "Description must be less than 500 characters")
+    @Size(min = 10,max = 500, message = "Description must be less than 500 characters")
     private String description;
 
     @NotNull(message = "Priority is required")
