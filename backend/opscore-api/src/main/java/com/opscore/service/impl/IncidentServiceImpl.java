@@ -1,9 +1,13 @@
 package com.opscore.service.impl;
 
+import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
+import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.enums.IncidentStatus;
+import com.opscore.exception.ResourceNotFoundException;
+import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
 import com.opscore.service.IncidentService;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +16,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final AssignmentRepository assignmentRepository;
+
+    public IncidentServiceImpl(IncidentRepository incidentRepository,
+                               AssignmentRepository assignmentRepository) {
+        this.incidentRepository = incidentRepository;
+        this.assignmentRepository = assignmentRepository;
+    }
+
 
     @Override
     public IncidentResponseDTO createIncident(IncidentRequestDTO request) {
@@ -69,5 +81,31 @@ public class IncidentServiceImpl implements IncidentService {
         return mapToResponse(incident);
     }
 
+    @Override
+    public List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId) {
+
+        // 1. Validar que el incidente existe
+        Incident incident = incidentRepository.findById(incidentId)
+                //.orElseThrow(() -> new RuntimeException("Incident not found"));
+                //.orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Incident with id " + incidentId + " not found"
+                ));
+
+
+
+        // 2. Obtener asignaciones ordenadas
+        List<Assignment> assignments = assignmentRepository
+                .findByIncidentIdOrderByAssignedAtDesc(incidentId);
+
+        // 3. Mapear a DTO
+        return assignments.stream()
+                .map(a -> new AssignmentResponseDTO(
+                        a.getAssignedTo(),
+                        a.getAssignedBy(),
+                        a.getAssignedAt()
+                ))
+                .toList();
+    }
 }
 
