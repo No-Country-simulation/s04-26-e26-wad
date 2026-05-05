@@ -9,6 +9,8 @@ import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
 import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
+import com.opscore.security.SecurityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,12 +45,19 @@ public class AssignmentService {
             throw new BadRequestException("Cannot assign a CLOSED incident");
         }
 
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
         // 3. Crear Assignment
         Assignment assignment = new Assignment();
         assignment.setIncident(incident);
         assignment.setAssignedTo(request.getAssignedTo());
         // 🔥 Simulación de usuario actual
-        assignment.setAssignedBy("SYSTEM"); // luego aquí irá JWT
+        //assignment.setAssignedBy("SYSTEM"); // luego aquí irá JWT
+        //assignment.setAssignedBy(username);
+        assignment.setAssignedBy(SecurityUtils.getCurrentUsername());
 
         // 4. Guardar assignment
         assignmentRepository.save(assignment);
