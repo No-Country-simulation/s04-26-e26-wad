@@ -15,5 +15,6 @@ public interface IncidentService {
 
     List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId);
 
+    public void resolveIncident(Long incidentId);
 }
 

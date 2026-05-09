@@ -6,13 +6,16 @@ import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.enums.IncidentStatus;
+import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
 import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
+import com.opscore.security.SecurityUtils;
 import com.opscore.service.IncidentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -86,8 +89,6 @@ public class IncidentServiceImpl implements IncidentService {
 
         // 1. Validar que el incidente existe
         Incident incident = incidentRepository.findById(incidentId)
-                //.orElseThrow(() -> new RuntimeException("Incident not found"));
-                //.orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Incident with id " + incidentId + " not found"
                 ));
@@ -107,5 +108,29 @@ public class IncidentServiceImpl implements IncidentService {
                 ))
                 .toList();
     }
+
+    public void resolveIncident(Long incidentId) {
+
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+
+        // Regla: no resolver incidente ya cerrado
+        if (incident.getStatus() == IncidentStatus.CLOSED) {
+            throw new BadRequestException(
+                    "Cannot resolve a CLOSED incident");
+        }
+
+        incident.setStatus(IncidentStatus.RESOLVED);
+
+        incident.setResolvedAt(LocalDateTime.now());
+
+        incident.setResolvedBy(SecurityUtils.getCurrentUsername());
+
+        incident.setUpdatedBy(SecurityUtils.getCurrentUsername());
+
+        incidentRepository.save(incident);
+    }
+
 }
 

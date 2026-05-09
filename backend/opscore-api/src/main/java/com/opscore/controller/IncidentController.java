@@ -46,5 +46,15 @@ public class IncidentController {
         return ResponseEntity.ok(history);
     }
 
+    //tecnico resuelve incidente
+    @PatchMapping("/{id}/resolve")
+    public ResponseEntity<Void> resolveIncident(@PathVariable Long id) {
+
+        incidentService.resolveIncident(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
 

@@ -3,6 +3,7 @@ package com.opscore.config;
 import com.opscore.entity.User;
 import com.opscore.repository.UserRepository;
 import com.opscore.service.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -36,25 +38,43 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        String username = jwtService.extractUsername(token);
+        try {
+            String token = authHeader.substring(7);
+            String username = jwtService.extractUsername(token);
 
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow();
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow();
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            user.getUsername(),
-                            null,
-                            List.of()
-                    );
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                user.getUsername(),
+                                null,
+                                List.of()
+                        );
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
 
-        filterChain.doFilter(request, response);
+        } catch(JwtException e){
+
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                response.setContentType("application/json");
+
+                response.getWriter().write("""
+                         {
+                            "status": 401,
+                            "error": "UNAUTHORIZED",
+                            "message": "Invalid or expired token"
+                        }
+                        """);
+
+                return;
+            }
+
+          filterChain.doFilter(request, response);
     }
 }

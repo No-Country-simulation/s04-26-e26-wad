@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtService {
 
     private final String SECRET = "mi_clave_secreta_super_segura_12345678901234567890";
-    //private final String SECRET = "mi_clave_secreta_super_segura";
+
 
     public String generateToken(User user) {
         return Jwts.builder()
