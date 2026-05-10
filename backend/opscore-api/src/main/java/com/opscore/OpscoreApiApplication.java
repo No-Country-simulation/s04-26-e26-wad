@@ -1,6 +1,7 @@
 package com.opscore;
 
 import com.opscore.entity.User;
+import com.opscore.enums.Role;
 import com.opscore.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +26,9 @@ public class OpscoreApiApplication {
 
 				User user = new User();
 				user.setUsername("admin");
+
+				user.setRole(Role.ADMIN);
+
 				user.setPassword(encoder.encode("1234"));
 
 				repo.save(user);

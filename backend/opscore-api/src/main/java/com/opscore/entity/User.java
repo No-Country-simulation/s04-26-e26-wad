@@ -1,5 +1,6 @@
 package com.opscore.entity;
 
+import com.opscore.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,10 @@ public class User {
 
     private String username;
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
 }
 
