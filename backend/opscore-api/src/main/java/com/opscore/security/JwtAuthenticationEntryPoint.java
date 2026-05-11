@@ -29,7 +29,8 @@ public class JwtAuthenticationEntryPoint
 
         Map<String, Object> body = new HashMap<>();
 
-        body.put("timestamp", LocalDateTime.now());
+        //body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDateTime.now().toString());
         body.put("status", 401);
         body.put("error", "UNAUTHORIZED");
         body.put("message", "Authentication required");

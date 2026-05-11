@@ -31,6 +31,8 @@ public class OpscoreApiApplication {
 
 				user.setPassword(encoder.encode("1234"));
 
+                user.setEnabled(true);
+
 				repo.save(user);
 			}
 		};
