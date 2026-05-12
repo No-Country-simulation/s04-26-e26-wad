@@ -4,6 +4,7 @@ import com.opscore.dto.assignment.AssignmentRequestDTO;
 import com.opscore.service.AssignmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,8 @@ public class AssignmentController {
         this.assignmentService = assignmentService;
     }
 
+    //@PreAuthorize("hasRole('SUPERVISOR')")
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
     @PostMapping("/{id}/assign")
     public ResponseEntity<Void> assignIncident(
             @PathVariable Long id,

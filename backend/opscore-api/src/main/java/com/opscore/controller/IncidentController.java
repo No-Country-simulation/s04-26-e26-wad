@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +46,18 @@ public class IncidentController {
 
         return ResponseEntity.ok(history);
     }
+
+    //tecnico resuelve incidente
+    //@PreAuthorize("hasRole('TECHNICIAN')")
+    @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
+    @PatchMapping("/{id}/resolve")
+    public ResponseEntity<Void> resolveIncident(@PathVariable Long id) {
+
+        incidentService.resolveIncident(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
 

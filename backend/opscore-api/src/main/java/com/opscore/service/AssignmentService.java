@@ -9,6 +9,8 @@ import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
 import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
+import com.opscore.security.SecurityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +29,6 @@ public class AssignmentService {
 
     public void assignIncident(Long incidentId, AssignmentRequestDTO request) {
 
-        // 0. Validar request (PRIMERO)
-       // if (request.getAssignedTo() == null || request.getAssignedTo().isBlank()) {
-        //    throw new RuntimeException("assignedTo is required");
-        //}
-
         // 1. Validar existencia
         Incident incident = incidentRepository.findById(incidentId)
                 //.orElseThrow(() -> new RuntimeException("Incident not found"));
@@ -43,18 +40,25 @@ public class AssignmentService {
             throw new BadRequestException("Cannot assign a CLOSED incident");
         }
 
+        /*String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();*/
+
         // 3. Crear Assignment
         Assignment assignment = new Assignment();
         assignment.setIncident(incident);
         assignment.setAssignedTo(request.getAssignedTo());
         // 🔥 Simulación de usuario actual
-        assignment.setAssignedBy("SYSTEM"); // luego aquí irá JWT
+        assignment.setAssignedBy(SecurityUtils.getCurrentUsername());
 
         // 4. Guardar assignment
         assignmentRepository.save(assignment);
 
         // 5. Cambiar estado del incidente
         incident.setStatus(IncidentStatus.IN_PROGRESS);
+        //quien cambio el estado
+        incident.setUpdatedBy(SecurityUtils.getCurrentUsername());
 
         incidentRepository.save(incident);
     }

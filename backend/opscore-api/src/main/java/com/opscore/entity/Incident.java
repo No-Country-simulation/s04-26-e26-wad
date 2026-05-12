@@ -52,5 +52,9 @@ public class Incident {
     private LocalDateTime updatedAt;
 
     private LocalDateTime resolvedAt;
+
+    private String updatedBy;
+    private String resolvedBy;
+
 }
 
