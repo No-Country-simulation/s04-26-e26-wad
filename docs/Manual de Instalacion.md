@@ -93,7 +93,7 @@ src/main/resources/application.properties
 Configurar:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/opscore
+spring.datasource.url=jdbc:postgresql://localhost:5432/opscore_db
 spring.datasource.username=postgres
 spring.datasource.password=TU_PASSWORD
 
@@ -185,7 +185,7 @@ ADMIN
 Ejecutar request:
 
 ```http
-POST /auth/login
+POST http://localhost:8080/auth/login
 ```
 
 Body:
@@ -239,7 +239,7 @@ probablemente el token expiró.
 
 En ese caso:
 
-1. Ejecutar nuevamente `/auth/login`
+1. Ejecutar nuevamente `POST http://localhost:8080/auth/login`
 2. Copiar nuevo token
 3. Reemplazar Bearer Token
 
@@ -250,7 +250,20 @@ En ese caso:
 ## 1. Login
 
 ```http
-POST /auth/login
+POST http://localhost:8080/auth/login
+```
+Body Request
+```http
+{
+"username": "admin",
+"password": "1234"
+}
+```
+Body Response
+```http
+{
+    "token": "eyJhbGciO..."
+}
 ```
 
 ---
@@ -258,7 +271,29 @@ POST /auth/login
 ## 2. Crear incidente
 
 ```http
-POST /incidents
+POST http://localhost:8080/incidents
+```
+Body request
+```http
+{
+  "title": "Falla en línea de producción",
+  "description": "La máquina se detuvo inesperadamente",
+  "priority": "MEDIUM",
+  "category": "OPERATIONS"
+}
+```
+Body Response
+```http
+{
+    "id": 1,
+    "title": "Falla en línea de producción",
+    "description": "La máquina se detuvo inesperadamente",
+    "status": "OPEN",
+    "priority": "MEDIUM",
+    "category": "OPERATIONS",
+    "createdAt": "2026-05-13T17:52:26.7008936",
+    "resolvedAt": null
+}
 ```
 
 ---
@@ -266,16 +301,27 @@ POST /incidents
 ## 3. Asignar incidente
 
 ```http
-POST /assignments
+POST http://localhost:8080/incidents/{id}/assign
+```
+Body Request
+```http
+{
+  "assignedTo": "Juan Perez"
+}
 ```
 
+No tiene Body Response, devuelve 200 OK
+ 
 ---
 
 ## 4. Resolver incidente
 
 ```http
-PATCH /incidents/{id}/resolve
+PATCH http://localhost:8080/incidents/{id}/resolve
 ```
+
+No tiene Body Request.    
+No tiene Body Response, devuelve 204 No Content
 
 ---
 
@@ -284,32 +330,113 @@ PATCH /incidents/{id}/resolve
 ### Crear usuario
 
 ```http
-POST /users
+POST http://localhost:8080/users
+```
+```http
+Body Request
+{
+  "username": "operador",
+  "password": "1235",
+  "role": "OPERATOR"
+}
+```
+Body Response
+```http
+{
+    "id": 2,
+    "username": "operador",
+    "role": "OPERATOR"
+}
 ```
 
 ### Obtener usuarios
 
 ```http
-GET /users
+GET http://localhost:8080/users
+```
+Body Request none
+
+Body Response
+```http
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "role": "ADMIN"
+    },
+    {
+        "id": 2,
+        "username": "operador",
+        "role": "OPERATOR"
+    },
+    {
+        "id": 3,
+        "username": "tecnico",
+        "role": "TECHNICIAN"
+    }   
+]
 ```
 
 ### Actualizar rol
 
 ```http
-PATCH /users/{id}/role
+PATCH http://localhost:8080/users/{id}/role
+```
+Body Request
+```http
+{
+  "role": "OPERATOR"
+}
+```
+Body Response
+```http
+{
+    "id": {id},
+    "username": "supervisor",
+    "role": "OPERATOR"
+}
 ```
 
 ### Desactivar usuario
 
 ```http
-PATCH /users/{id}/disable
+PATCH  http://localhost:8080/users/{id}/status 
+```
+Body Request
+```http
+{
+  "enabled": true
+}
+```
+Body Response
+```http
+{
+    "id": 3,
+    "username": "tecnico",
+    "role": "TECHNICIAN"
+} 
 ```
 
 ### Cambiar password
-
+Cambia el password del usuario logeado
 ```http
-PATCH /users/change-password
+PATCH  http://localhost:8080/users/change-password
 ```
+Body Request
+```http
+{
+  "currentPassword": "1234",
+  "newPassword": "abcd"
+}
+```
+Body Response
+```http
+{
+    "token": "eyJhbGciOi...."
+}
+```
+Para ejecutar las Request es necesario volver 
+iniciar sesion, con la nueva contraseña
 
 ---
 
