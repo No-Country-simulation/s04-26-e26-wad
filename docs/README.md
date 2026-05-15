@@ -79,34 +79,46 @@ OpsCore
 
 # 📌 Endpoints principales
 
-## Auth
+## Auth / Login
 
-| Método | Endpoint |
-|---|---|
-| POST | `/api/auth/login` |
+| Request    | Método | Endpoint |
+|------------|---|---|
+| loging | POST | `http://localhost:8080/auth/login` |
 
 ---
 
 ## Usuarios
 
-| Método | Endpoint |
-|---|---|
-| GET | `/api/users` |
-| GET | `/api/users/{id}` |
-| POST | `/api/users` |
-| PUT | `/api/users/{id}` |
-| DELETE | `/api/users/{id}` |
+| Request        | Método      | Endpoint                                  |
+|----------------|-------------|-------------------------------------------|
+| create         | POST        | `http://localhost:8080/users`             |
+| *findById      | GET         | `http://localhost:8080/users/{id}`        |
+| listAll        | GET         | `http://localhost:8080/users`             |
+| *update        | PUT         | `http://localhost:8080/users/{id}`        |
+| delete         | DELETE      | `http://localhost:8080/users/{id}`        |
+| updateStatus   | PATCH | `http://localhost:8080/users/{id}/status` |
+| updateRole     | PATCH | `http://localhost:8080/users/{id}/role`  |
+| changePassword | PATCH | `http://localhost:8080/users/change-password`  |
 
 ---
 
 ## Incidentes
 
-| Método | Endpoint |
-|---|---|
-| GET | `/api/incidents` |
-| POST | `/api/incidents` |
-| PUT | `/api/incidents/{id}` |
-| PATCH | `/api/incidents/{id}/status` |
+| Request      | Método | Endpoint                                       |
+|--------------|---|------------------------------------------------|
+| getALL       | GET | `http://localhost:8080/incidents`              |
+| create       | POST    | `http://localhost:8080/incidents`              |
+| findById     | GET | `http://localhost:8080/incidents{id}`          |
+| *update      | PUT       | `http://localhost:8080/incidents/{id}`         |
+| *delete      | DELETE      | `http://localhost:8080/users/{id}`             |
+| resolve | PATCH    | `http://localhost:8080/incidents/{id}/resolve` |
+
+---
+## Asignamientos
+
+| Request  | Método                       | Endpoint                                       |
+|----------|------------------------------|------------------------------------------------|
+| assign   | POST                         | `http://localhost:8080/incidents/{id}/assign` |
 
 ---
 
@@ -145,7 +157,7 @@ CREATE DATABASE opscore;
 ## 3. Configurar variables en `application.properties`
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/opscore
+spring.datasource.url=jdbc:postgresql://localhost:5432/opscore_db
 spring.datasource.username=postgres
 spring.datasource.password=your_password
 ```
@@ -165,7 +177,7 @@ mvn spring-boot:run
 ## Obtener token
 
 ```http
-POST /api/auth/login
+POST http://localhost:8080/auth/login
 ```
 
 Ejemplo:
